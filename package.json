@@ -1,0 +1,35 @@
+{
+  "name": "reliefweb",
+  "version": "0.0.1",
+  "description": "JavaScript and node.js bindings for the Reliefweb API",
+  "author": "Reliefweb",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/reliefweb/reliefweb.js.git"
+  },
+  "keywords": [
+    "reliefweb",
+    "humanitarian",
+    "sdk"
+  ],
+  "homepage": "http://github.com/apostle/reliefweb.js",
+  "bugs": {
+    "url": "http://github.com/reliefweb/reliefweb.js/issues"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "main": "./lib/reliefweb.js",
+  "dependencies": {
+    "superagent": "~0.16"
+  },
+  "devDependencies": {
+    "mocha": "~1.17"
+  },
+  "scripts": {
+    "test": "test/run.sh"
+  }
+}
+
+
