@@ -25,7 +25,9 @@
     "superagent": "~0.16"
   },
   "devDependencies": {
-    "mocha": "~1.17"
+    "mocha": "~1.17",
+    "should": "~3.1.0",
+    "mocha-jenkins-reporter": "~0.0.9"
   },
   "scripts": {
     "test": "test/run.sh"
