@@ -1,9 +1,14 @@
-var assert = require('assert');
-var reliefweb = require('../lib/reliefweb');
+var assert = require('assert')
+  , reliefweb = require('../lib/reliefweb')
+  , shared = require('./shared');
 
 var resources = {
   "v0": ["job", "training", "disaster", "source", "country", "report"],
   "v1": ["jobs", "training", "disasters", "sources", "countries", "reports"]
+};
+
+var items = {
+  "v1": {"jobs": 617218, "training": 401417, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
 };
 
 describe('reliefweb.js', function() {
@@ -105,6 +110,25 @@ describe('API Meta-Resources', function(){
         });
         done();
       });
+    })
+  })
+})
+
+describe('API v1 Entity:', function(){
+  before(function() {
+    this.rw = reliefweb.client({
+      'host': 'unrw.p2devcloud.com'
+    });
+  });
+
+  resources.v1.map(function(resource){
+    describe(resource, function() {
+      before(function() {
+        this.resource = resource;
+        this.id = items.v1[resource];
+      })
+
+      shared.shouldBehaveLikeAnEntity();
     })
   })
 })
