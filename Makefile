@@ -3,8 +3,9 @@ all: lib/reliefweb.js
 test:
 	@NODE_ENV=test ./node_modules/.bin/mocha --growl
 
-jenkins: 
-	JUNIT_REPORT_PATH=build/report.xml ./node_modules/.bin/mocha --reporter mocha-jenkins-reporter || true
+jenkins:
+	@NODE_ENV=test \
+        JUNIT_REPORT_PATH=build/report.xml ./node_modules/.bin/mocha --reporter mocha-jenkins-reporter || true
 
 init:
 	@mkdir build

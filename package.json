@@ -27,7 +27,8 @@
   "devDependencies": {
     "mocha": "~1.17",
     "should": "~3.1.0",
-    "mocha-jenkins-reporter": "~0.0.9"
+    "mocha-jenkins-reporter": "~0.0.9",
+    "config": "~0.4.35"
   },
   "scripts": {
     "test": "test/run.sh"

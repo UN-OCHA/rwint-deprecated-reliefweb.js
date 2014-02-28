@@ -2,18 +2,20 @@ var assert = require('assert')
   , reliefweb = require('../lib/reliefweb')
   , shared = require('./shared');
 
+var config = require('config');
+
 var resources = {
   "v0": ["job", "training", "disaster", "source", "country", "report"],
   "v1": ["jobs", "training", "disasters", "sources", "countries", "reports"]
 };
 
 var items = {
-  "v1": {"jobs": 617218, "training": 401417, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
+  "v1": {"jobs": 606898, "training": 634730, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
 };
 
 describe('reliefweb.js', function() {
   var rw = reliefweb.client({
-    'host': 'unrw.p2devcloud.com'
+    'host': config.api.host
   });
   it ('produces a valid API client', function() {
     rw.should.be.an.instanceOf(reliefweb.Client);
@@ -26,7 +28,7 @@ describe('API Meta-Resources', function(){
     var rw;
     before(function() {
       rw = reliefweb.client({
-        'host': 'unrw.p2devcloud.com'
+        'host': config.api.host
       });
     });
 
@@ -41,7 +43,7 @@ describe('API Meta-Resources', function(){
     var rw;
     before(function() {
       rw = reliefweb.client({
-        'host': 'unrw.p2devcloud.com'
+        'host': config.api.host
       });
     });
 
@@ -77,7 +79,7 @@ describe('API Meta-Resources', function(){
     var rw;
     before(function() {
       rw = reliefweb.client({
-        'host': 'unrw.p2devcloud.com'
+        'host': config.api.host
       });
     });
 
@@ -117,7 +119,7 @@ describe('API Meta-Resources', function(){
 describe('API v1 Entity:', function(){
   before(function() {
     this.rw = reliefweb.client({
-      'host': 'unrw.p2devcloud.com'
+      'host': config.api.host
     });
   });
 
