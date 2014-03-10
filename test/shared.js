@@ -5,6 +5,12 @@ exports.shouldBehaveLikeAnEntity = function() {
       done();
     });
   })
+  it('should cache lists of items for 2 seconds', function(done) {
+    this.rw.get(this.resource, null, function(err, response) {
+      response.headers['cache-control'].should.equal('public, max-age=2');
+      done();
+    });
+  })
   it('will have individual items tested with a legitimate identifier', function() {
     this.id.should.be.an.instanceOf(Number);
   })
@@ -49,5 +55,11 @@ exports.shouldBehaveLikeAnEntity = function() {
       response.status.should.equal(200);
       done();
     })
+  })
+  it('should cache individual items for 5 minutes', function(done) {
+    this.rw.get(this.resource, this.id, function(err, response) {
+      response.headers['cache-control'].should.equal('public, max-age=300');
+      done();
+    });
   })
 };

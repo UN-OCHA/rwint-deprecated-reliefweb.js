@@ -24,7 +24,6 @@ describe('reliefweb.js', function() {
 
 describe('API Meta-Resources', function(){
   describe('Root (/)', function(){
-
     var rw;
     before(function() {
       rw = reliefweb.client({
@@ -110,6 +109,12 @@ describe('API Meta-Resources', function(){
           response.body.data[resource].href.should.be.ok;
           response.body.data[resource].title.should.be.ok;
         });
+        done();
+      });
+    })
+    it('should be cached for 3 hours', function(done) {
+      rw.get('/v1', null, function(err, response) {
+        response.headers['cache-control'].should.equal('public, max-age=10800');
         done();
       });
     })
