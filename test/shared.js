@@ -38,6 +38,24 @@ exports.shouldBehaveLikeAnEntity = function() {
       done();
     })
   })
+  it('allows number of items in list to be controlled by a limit', function(done) {
+    this.rw.get(this.resource, 'limit=3', function(err, response) {
+      response.body.count.should.equal(3);
+      done();
+    })
+  })
+  it('provides a pager mechanism that cannot go back before the first item', function(done) {
+    this.rw.get(this.resource, null, function(err, response) {
+      response.body.links.should.not.have.property('prev');
+      done();
+    })
+  })
+  it.only('provides a pager mechanism that can page backwards if there are items', function(done) {
+    this.rw.get(this.resource, 'offset=5', function(err, response) {
+      response.body.links.should.have.property('prev');
+      done();
+    })
+  })
   it('does not allow individual items to be queried', function(done) {
     this.rw.get(this.resource + '/' + this.id, 'query[value]=rain', function(err, response) {
       response.status.should.equal(400);
