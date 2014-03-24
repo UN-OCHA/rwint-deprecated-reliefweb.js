@@ -20,14 +20,23 @@ exports.shouldBehaveLikeAnEntity = function() {
       done();
     });
   })
-  it('allows lists to be sorted', function(done) {
-    this.rw.get(this.resource, 'sort[0]=id:desc', function(err, response) {
+  it('defaults lists to a sort order of id descending', function(done) {
+    this.rw.get(this.resource, 'null', function(err, response) {
       response.status.should.equal(200);
+      response.body.data[0].id.should.be.above(response.body.data[1].id);
+      done();
+    })
+  })
+  it('allows lists to be sorted', function(done) {
+    this.rw.get(this.resource, 'sort[0]=id:asc', function(err, response) {
+      response.status.should.equal(200);
+      // The default sort order is id:desc
+      response.body.data[0].id.should.be.below(response.body.data[1].id);
       done();
     })
   })
   it('does not allow individual items to be sorted', function(done) {
-    this.rw.get(this.resource + '/' + this.id, 'sort[0]=id:desc', function(err, response) {
+    this.rw.get(this.resource + '/' + this.id, 'sort[0]=id:asc', function(err, response) {
       response.status.should.equal(400);
       done();
     });
@@ -50,7 +59,7 @@ exports.shouldBehaveLikeAnEntity = function() {
       done();
     })
   })
-  it.only('provides a pager mechanism that can page backwards if there are items', function(done) {
+  it('provides a pager mechanism that can page backwards if there are items', function(done) {
     this.rw.get(this.resource, 'offset=5', function(err, response) {
       response.body.links.should.have.property('prev');
       done();
@@ -65,12 +74,18 @@ exports.shouldBehaveLikeAnEntity = function() {
   it('allows lists to have fields specified', function(done) {
     this.rw.get(this.resource, 'fields[include][]=id', function(err, response) {
       response.status.should.equal(200);
+      fields = Object.keys(response.body.data[0].fields)
+      fields.length.should.equal(1);
+      response.body.data[0].fields.should.have.property('id');
       done();
     })
   })
   it('allows individual items to have fields specified', function(done) {
     this.rw.get(this.resource + '/' + this.id, 'fields[include][]=id', function(err, response) {
       response.status.should.equal(200);
+      fields = Object.keys(response.body.data[0].fields)
+      fields.length.should.equal(1);
+      response.body.data[0].fields.should.have.property('id');
       done();
     })
   })
