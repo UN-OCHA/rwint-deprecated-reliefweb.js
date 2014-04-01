@@ -89,6 +89,16 @@ exports.shouldBehaveLikeAnEntity = function() {
       done();
     })
   })
+  it('allows lists to be filtered via a single condition', function(done) {
+    this.rw.get(this.resource, 'filter[field]=id&filter[value]=' + this.id, function(err, response) {
+      response.status.should.equal(200);
+      // this.id is not available in callback scope.
+      var regex = /(\d+)$/;
+      var id = response.req.path.match(regex)[1];
+      response.body.data[0].id.should.equal(id);
+      done();
+    });
+  })
   it('should cache individual items for 5 minutes', function(done) {
     this.rw.get(this.resource, this.id, function(err, response) {
       response.headers['cache-control'].should.equal('public, max-age=300');
