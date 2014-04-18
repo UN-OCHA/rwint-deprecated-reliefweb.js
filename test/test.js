@@ -139,3 +139,31 @@ describe('API v1 Entity:', function(){
     })
   })
 })
+
+describe('API v1: Reports - Advanced Testing', function() {
+  var rw;
+  before(function() {
+    rw = reliefweb.client({
+      'host': config.api.host
+    });
+  });
+
+  it('allows lists to be filtered by multiple conditions', function(done) {
+    parameters = 'filter[operator]=AND'
+      + '&filter[conditions][0][field]=title&filter[conditions][0][value]=humanitarian'
+      + '&filter[conditions][1][field]=source&filter[conditions][1][value]=OCHA';
+    rw.reports(parameters, function(err, response) {
+      response.status.should.equal(200);
+      response.body.count.should.equal(10);
+      done();
+    });
+  })
+
+  it('allows date fields to be filtered with ISO 8601 inputs', function(done) {
+    var parameters = 'filter[field]=date.created&filter[value][from]=2007-07-31T04%3A00%3A00%2B00%3A00';
+    rw.reports(parameters, function(err, response) {
+      response.status.should.equal(200);
+      done();
+    });
+  })
+})

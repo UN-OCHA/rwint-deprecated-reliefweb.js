@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="node_modules/superagent/superagent.js"></script>
+    <script type="text/javascript" src="lib/reliefweb.js"></script>
+
+    <script type="text/javascript">
+        var rw = new Reliefweb({"host": "adam.unrw.p2devcloud.com"});
+
+        var params = 'fields[include][]=date&fields[include][]=title';
+
+        function syntaxHighlight(json) {
+            if (typeof json != 'string') {
+                json = JSON.stringify(json, undefined, 2);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+    </script>
+
+</head>
+<body>
+<h1>Welcome to the Reliefweb Development Trial!</h1>
+
+<div id="rw-display"></div>
+
+<script type="text/javascript">
+    rw.reports(params, function(err, response) {
+        if (err) {
+            console.error(err.message);
+            document.getElementById('rw-display').innerHTML = "Request failed, see log for details.";
+            return;
+        }
+        document.getElementById('rw-display').innerHTML = syntaxHighlight(response.text);
+    });
+</script>
+
+</body>
+</html>
