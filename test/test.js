@@ -10,7 +10,7 @@ var resources = {
 };
 
 var items = {
-  "v1": {"jobs": 606898, "training": 634730, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
+  "v1": {"jobs": 606898, "training": 399467, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
 };
 
 describe('reliefweb.js', function() {
@@ -32,7 +32,7 @@ describe('API Meta-Resources', function(){
     });
 
     it('should return 200', function(done) {
-      rw.get('/', null, function(err, response) {
+      rw.request('/', function(err, response) {
         response.status.should.equal(200);
         done();
       });
@@ -42,18 +42,19 @@ describe('API Meta-Resources', function(){
     var rw;
     before(function() {
       rw = reliefweb.client({
-        'host': config.api.host
+        'host': config.api.host,
+        'version': '0'
       });
     });
 
     it('should return 200', function(done) {
-      rw.get('/v0', null, function(err, response) {
+      rw.get('/', function(err, response) {
         response.status.should.equal(200);
         done();
       });
     })
     it('should have all elements', function(done) {
-      rw.get('/v0', null, function(err, response) {
+      rw.get('/', function(err, response) {
         response.body.data.title.should.be.ok;
         response.body.time.should.be.an.instanceOf(Number);
         response.body.version.should.equal('0');
@@ -63,7 +64,7 @@ describe('API Meta-Resources', function(){
       });
     })
     it('should list all resources', function(done) {
-      rw.get('/v0', null, function(err, response) {
+      rw.get('/', function(err, response) {
         resources.v0.map(function(resource){
           response.body.data.endpoints[resource].should.be.ok;
           response.body.data.endpoints[resource].item.should.be.ok;
@@ -83,13 +84,13 @@ describe('API Meta-Resources', function(){
     });
 
     it('should return 200', function(done) {
-      rw.get('/v1', null, function(err, response) {
+      rw.get('/', function(err, response) {
         response.status.should.equal(200);
         done();
       });
     })
     it('should have all elements', function(done) {
-      rw.get('/v1', null, function(err, response) {
+      rw.get('/', function(err, response) {
         response.body.title.should.be.ok;
         response.body.description.should.be.ok;
         response.body.build.should.be.ok;
@@ -103,7 +104,7 @@ describe('API Meta-Resources', function(){
       });
     })
     it('should list all resources', function(done) {
-      rw.get('/v1', null, function(err, response) {
+      rw.get('/', function(err, response) {
         resources.v1.map(function(resource){
           response.body.data[resource].should.be.ok;
           response.body.data[resource].href.should.be.ok;
@@ -113,7 +114,7 @@ describe('API Meta-Resources', function(){
       });
     })
     it('should be cached for 3 hours', function(done) {
-      rw.get('/v1', null, function(err, response) {
+      rw.get('/', function(err, response) {
         response.headers['cache-control'].should.equal('public, max-age=10800');
         done();
       });
@@ -149,10 +150,22 @@ describe('API v1: Reports - Advanced Testing', function() {
   });
 
   it('allows lists to be filtered by multiple conditions', function(done) {
-    parameters = 'filter[operator]=AND'
-      + '&filter[conditions][0][field]=title&filter[conditions][0][value]=humanitarian'
-      + '&filter[conditions][1][field]=source&filter[conditions][1][value]=OCHA';
-    rw.reports(parameters, function(err, response) {
+    var params = {
+      filter: {
+        operator: 'AND',
+        conditions: [
+          {
+            field: 'title',
+            value: 'humanitarian'
+          },
+          {
+            field: 'source',
+            value: 'OCHA'
+          }
+        ]
+      }
+    };
+    rw.reports().send(params).end(function(err, response) {
       response.status.should.equal(200);
       response.body.count.should.equal(10);
       done();
@@ -160,8 +173,41 @@ describe('API v1: Reports - Advanced Testing', function() {
   })
 
   it('allows date fields to be filtered with ISO 8601 inputs', function(done) {
-    var parameters = 'filter[field]=date.created&filter[value][from]=2007-07-31T04%3A00%3A00%2B00%3A00';
-    rw.reports(parameters, function(err, response) {
+    var params = {
+      filter: {
+        field: 'date.created',
+        value: {
+          from: '2007-07-31T04%3A00%3A00%2B00%3A00'
+        }
+      }
+    };
+
+    rw.reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      done();
+    });
+  })
+})
+
+describe('API v1 POST tests', function() {
+  var rw;
+  before(function() {
+    rw = reliefweb.client({
+      'host': config.api.host
+    });
+  });
+
+  it('simple GET test to verify functionality', function (done) {
+    rw.reports(238722).end(function(err, response) {
+      console.log(response.body);
+      response.status.should.equal(200);
+      done();
+    });
+  })
+
+  it('allows POST requests to be made', function(done) {
+    rw.method('POST').reports().end(function(err, response) {
+      console.log(err);
       response.status.should.equal(200);
       done();
     });
