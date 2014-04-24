@@ -10,7 +10,7 @@ var resources = {
 };
 
 var items = {
-  "v1": {"jobs": 606898, "training": 399467, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
+  "v1": {"jobs": 606898, "training": 419295, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
 };
 
 describe('reliefweb.js', function() {
@@ -177,12 +177,12 @@ describe('API v1: Reports - Advanced Testing', function() {
       filter: {
         field: 'date.created',
         value: {
-          from: '2007-07-31T04%3A00%3A00%2B00%3A00'
+          from: '2007-07-31T00:00:00+00:00'
         }
       }
     };
 
-    rw.reports().send(params).end(function(err, response) {
+    rw.method('POST').reports().send(params).end(function(err, response) {
       response.status.should.equal(200);
       done();
     });
@@ -199,7 +199,6 @@ describe('API v1 POST tests', function() {
 
   it('simple GET test to verify functionality', function (done) {
     rw.reports(238722).end(function(err, response) {
-      console.log(response.body);
       response.status.should.equal(200);
       done();
     });
@@ -207,7 +206,6 @@ describe('API v1 POST tests', function() {
 
   it('allows POST requests to be made', function(done) {
     rw.method('POST').reports().end(function(err, response) {
-      console.log(err);
       response.status.should.equal(200);
       done();
     });

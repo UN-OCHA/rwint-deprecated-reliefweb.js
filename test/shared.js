@@ -73,7 +73,7 @@ exports.shouldBehaveLikeAnEntity = function() {
       done();
     })
   })
-  it.only('allows lists to have fields specified', function(done) {
+  it('allows lists to have fields specified', function(done) {
     this.rw.post(this.resource).fields(['id'])
       .end(function(err, response) {
         response.status.should.equal(200);
@@ -94,18 +94,10 @@ exports.shouldBehaveLikeAnEntity = function() {
     })
   })
   it('allows lists to be filtered via a single condition (using POST)', function(done) {
-    var params = {
-      filter: {
-        field: 'id',
-        value: this.id
-      }
-    }
-    this.rw.post(this.resource).send(params).end(function(err, response) {
+    var params = { filter: { field: 'id', value: this.id }};
+    this.rw.get(this.resource).send(params).end(function(err, response) {
       response.status.should.equal(200);
-      // this.id is not available in callback scope.
-      var regex = /(\d+)$/;
-      var id = response.req.path.match(regex)[1];
-      response.body.data[0].id.should.equal(id);
+      response.body.count.should.be.equal(1);
       done();
     });
   })
