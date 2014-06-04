@@ -230,6 +230,8 @@ describe.only('API v1 Facet support', function() {
     rw.method('POST').reports().send(params).end(function(err, response) {
       response.status.should.equal(200);
       response.body.embedded.facets.should.have.property('status');
+      response.body.embedded.facets.status.should.have.property('data');
+      response.body.embedded.facets.status.data[0].should.have.keys('count', 'value');
       done();
     });
   });
@@ -300,6 +302,32 @@ describe.only('API v1 Facet support', function() {
     rw.method('POST').reports().send(params).end(function(err, response) {
       response.status.should.equal(200);
       response.body.embedded.facets.date.data.length.should.be.equal(2);
+      done();
+    });
+  })
+  it('should require the "field" property in all facet requests', function(done) {
+    var params = { facets: [
+      {
+        limit: 2
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(400);
+      done();
+    });
+  })
+  it('should have the "date" type for all date fields', function(done) {
+    var params = { facets: [
+      {
+        field: 'date'
+      },
+      {
+        field: 'source'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.body.embedded.facets.date.type.should.be.equal('date');
+      response.body.embedded.facets.source.type.should.be.equal('term');
       done();
     });
   })
