@@ -211,3 +211,96 @@ describe('API v1 POST tests', function() {
     });
   })
 })
+
+describe.only('API v1 Facet support', function() {
+  var rw;
+  before(function() {
+    rw = reliefweb.client({
+      'host': config.api.host
+    });
+  });
+
+  it('should allow lists to be faceted.', function(done) {
+    var params = { facets: [
+      {
+        field: "status"
+      }
+    ]}
+
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.should.have.property('status');
+      done();
+    });
+  });
+  it('should allow multiple facets to be used in a list.', function(done) {
+    var params = { facets: [
+      {
+        field: "status"
+      },
+      {
+        field: "date.created"
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.should.have.keys('status', 'date.created');
+      done();
+    });
+  });
+  it('should allow you to change the name of a facet with the name property.', function(done) {
+    var params = { facets: [
+      {
+        field: "status",
+        name: "workflow"
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.should.have.property('workflow');
+      done();
+    });
+  });
+  it('should name facets based on field property in the API request (not the forwarded ElasticSearch parameter)', function(done) {
+    var params = { facets: [
+      {
+        field: "date"
+      },
+      {
+        field: "source"
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      // Date is a container field converted to date.created.
+      // Source is a container field converted to source.name.exact.
+      response.body.embedded.facets.should.have.keys('date', 'source');
+      done();
+    });
+  })
+  it('should respect the limit property for any given term facet', function(done) {
+    var params = { facets: [
+      {
+        field: "status",
+        limit: 2
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.status.data.length.should.be.equal(2);
+      done();
+    });
+  })
+  it('should respect the limit property for any given date facet', function(done) {
+    var params = { facets: [
+      {
+        field: "date",
+        limit: 2
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.date.data.length.should.be.equal(2);
+      done();
+    });
+  })
+})
