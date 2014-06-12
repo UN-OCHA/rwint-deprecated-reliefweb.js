@@ -212,7 +212,7 @@ describe('API v1 POST tests', function() {
   })
 })
 
-describe.only('API v1 Facet support', function() {
+describe('API v1 Facet support', function() {
   var rw;
   before(function() {
     rw = reliefweb.client({
@@ -292,7 +292,7 @@ describe.only('API v1 Facet support', function() {
       done();
     });
   })
-  it('should respect the limit property for any given date facet', function(done) {
+  it('should deny the limit property for any given date facet', function(done) {
     var params = { facets: [
       {
         field: "date",
@@ -300,8 +300,7 @@ describe.only('API v1 Facet support', function() {
       }
     ]}
     rw.method('POST').reports().send(params).end(function(err, response) {
-      response.status.should.equal(200);
-      response.body.embedded.facets.date.data.length.should.be.equal(2);
+      response.status.should.equal(400);
       done();
     });
   })
@@ -328,6 +327,30 @@ describe.only('API v1 Facet support', function() {
     rw.method('POST').reports().send(params).end(function(err, response) {
       response.body.embedded.facets.date.type.should.be.equal('date');
       response.body.embedded.facets.source.type.should.be.equal('term');
+      done();
+    });
+  })
+  it('should allow the interval property for all date facets', function(done) {
+    var params = { facets: [
+      {
+        field: 'date',
+        interval: 'day'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      done();
+    });
+  })
+  it('should block the interval property for all term facets', function(done) {
+    var params = { facets: [
+      {
+        field: 'source',
+        interval: 'day'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(400);
       done();
     });
   })
