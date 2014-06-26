@@ -354,4 +354,131 @@ describe('API v1 Facet support', function() {
       done();
     });
   })
+  it('should not allow the sort property on date facets', function(done) {
+    var params = { facets: [
+      {
+        field: 'date',
+        sort: 'count'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(400);
+      done();
+    });
+  })
+  it('should allow the sort property on term facets', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'count'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      done();
+    });
+  })
+  it('should allow the sort property to use count and term for ordering', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'count'
+      },
+      {
+        field: 'status',
+        name: 'status2',
+        sort: 'term'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      done();
+    });
+  })
+  it('should not allow the sort property to use ordering other than count and term', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'sequence'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(400);
+      done();
+    });
+  })
+  it('should allow the sort property to use direction asc and desc', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'count:asc'
+      },
+      {
+        field: 'status',
+        name: 'status2',
+        sort: 'count:desc'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      done();
+    });
+  })
+  it('should not allow the sort property to use direction other than asc and desc', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'count:number'
+      },
+      {
+        field: 'status',
+        name: 'status2',
+        sort: 'count:alpha'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(400);
+      done();
+    });
+  })
+  it('should use desc as the default direction for count ordering', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'count',
+        limit: 20
+      },
+      {
+        field: 'status',
+        name: 'status2',
+        sort: 'count:desc',
+        limit: 20
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      var simple = response.body.embedded.facets;
+      JSON.stringify(simple.status.data).should.equal(JSON.stringify(simple.status2.data));
+      done();
+    });
+  })
+  it('should use asc as the default direction for term ordering', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'term',
+        limit: 20
+      },
+      {
+        field: 'status',
+        name: 'status2',
+        sort: 'term:asc',
+        limit: 20
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      var simple = response.body.embedded.facets;
+      JSON.stringify(simple.status.data).should.equal(JSON.stringify(simple.status2.data));
+      done();
+    });
+  })
 })
