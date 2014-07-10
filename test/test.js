@@ -187,6 +187,19 @@ describe('API v1: Reports - Advanced Testing', function() {
       done();
     });
   })
+
+  it('allows limit parameter to be equal to 0.', function(done) {
+    var params = {
+      limit: 0
+    };
+
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.count.should.equal(0);
+      response.body.totalCount.should.be.above(0);
+      done();
+    });
+  })
 })
 
 describe('API v1 POST tests', function() {
