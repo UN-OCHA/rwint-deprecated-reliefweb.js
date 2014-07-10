@@ -202,6 +202,31 @@ describe('API v1: Reports - Advanced Testing', function() {
   })
 })
 
+describe('API v1 status field tests', function() {
+  var rw;
+  before(function() {
+    rw = reliefweb.client({
+      'host': config.api.host
+    });
+  });
+
+  it('should see the status field.', function(done) {
+    var params = {
+      fields: {
+        include: ['title', 'status']
+      },
+      limit: 1
+    };
+
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.data[0].fields.title.should.not.be.empty;
+      response.body.data[0].fields.status.should.not.be.empty;
+      done();
+    });
+  })
+})
+
 describe('API v1 POST tests', function() {
   var rw;
   before(function() {
