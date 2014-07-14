@@ -392,6 +392,7 @@ describe('API v1 Facet support', function() {
       done();
     });
   })
+  // @todo sort will be allowed for date facets in API v1.2+.
   it('should not allow the sort property on date facets', function(done) {
     var params = { facets: [
       {
@@ -416,7 +417,7 @@ describe('API v1 Facet support', function() {
       done();
     });
   })
-  it('should allow the sort property to use count and term for ordering', function(done) {
+  it('should allow the sort property to use count and value for ordering', function(done) {
     var params = { facets: [
       {
         field: 'status',
@@ -425,7 +426,7 @@ describe('API v1 Facet support', function() {
       {
         field: 'status',
         name: 'status2',
-        sort: 'term'
+        sort: 'value'
       }
     ]}
     rw.method('POST').reports().send(params).end(function(err, response) {
@@ -433,7 +434,7 @@ describe('API v1 Facet support', function() {
       done();
     });
   })
-  it('should not allow the sort property to use ordering other than count and term', function(done) {
+  it('should not allow the sort property to use ordering other than count and value', function(done) {
     var params = { facets: [
       {
         field: 'status',
@@ -499,23 +500,51 @@ describe('API v1 Facet support', function() {
       done();
     });
   })
-  it('should use asc as the default direction for term ordering', function(done) {
+  it('should use asc as the default direction for value ordering', function(done) {
     var params = { facets: [
       {
         field: 'status',
-        sort: 'term',
+        sort: 'value',
         limit: 20
       },
       {
         field: 'status',
         name: 'status2',
-        sort: 'term:asc',
+        sort: 'value:asc',
         limit: 20
       }
     ]}
     rw.method('POST').reports().send(params).end(function(err, response) {
       var simple = response.body.embedded.facets;
       JSON.stringify(simple.status.data).should.equal(JSON.stringify(simple.status2.data));
+      done();
+    });
+  })
+  it('should have more equal to true when more facets are available', function(done) {
+    var params = { facets: [
+      {
+        field: 'country',
+        sort: 'value',
+        limit: 1
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.country.more.should.be.equal(true);
+      done();
+    });
+  })
+  it('should have more equal to false when all facet items have been returned', function(done) {
+    var params = { facets: [
+      {
+        field: 'status',
+        sort: 'value',
+        limit: 100
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.status.more.should.be.equal(false);
       done();
     });
   })
