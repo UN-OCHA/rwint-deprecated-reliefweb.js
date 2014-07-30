@@ -10,7 +10,7 @@ var resources = {
 };
 
 var items = {
-  "v1": {"jobs": 606898, "training": 419295, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
+  "v1": {"jobs": 670247, "training": 586345, "disasters": 13596, "sources": 13656, "countries": 8657, "reports": 436552}
 };
 
 describe('reliefweb.js', function() {
