@@ -548,4 +548,26 @@ describe('API v1 Facet support', function() {
       done();
     });
   })
+  it('should have same results when using facetsOn and exact.', function(done) {
+    var params = { facets: [
+      {
+        field: 'country',
+        name: 'country1'
+      },
+      {
+        field: 'country.name',
+        name: 'country2'
+      },
+      {
+        field: 'country.name.exact',
+        name: 'country3'
+      }
+    ]}
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.country1.data.should.eql(response.body.embedded.facets.country2.data);
+      response.body.embedded.facets.country1.data.should.eql(response.body.embedded.facets.country3.data);
+      done();
+    });
+  })
 })
