@@ -28,7 +28,7 @@ exports.shouldBehaveLikeAnEntity = function() {
     });
   });
   it('allows lists to be sorted', function(done) {
-    this.rw.get(this.resource).sort('id', 'asc')
+    this.rw.post(this.resource).sort('id', 'asc')
       .end(function(err, response) {
         response.status.should.equal(200);
         // The default sort order is id:desc
@@ -37,14 +37,14 @@ exports.shouldBehaveLikeAnEntity = function() {
     });
   });
   it('does not allow individual items to be sorted', function(done) {
-    this.rw.get(this.resource + '/' + this.id).sort('id', 'asc')
+    this.rw.get(this.resource + '/' + this.id).query({ sort: ['id:asc'] })
       .end(function(err, response) {
         response.status.should.equal(400);
         done();
     });
   });
   it('allows lists to be queried', function(done) {
-    this.rw.get(this.resource).search('rain').end(function(err, response) {
+    this.rw.post(this.resource).search('rain').end(function(err, response) {
       response.status.should.equal(200);
       done();
     });
@@ -68,9 +68,10 @@ exports.shouldBehaveLikeAnEntity = function() {
     });
   });
   it('does not allow individual items to be queried', function(done) {
-    this.rw.get(this.resource + '/' + this.id).search('rain').end(function(err, response) {
-      response.status.should.equal(400);
-      done();
+    this.rw.get(this.resource + '/' + this.id).query({ query: {value: 'rain'}})
+      .end(function(err, response) {
+        response.status.should.equal(400);
+        done();
     });
   });
   it('allows lists to have fields specified', function(done) {
@@ -84,7 +85,7 @@ exports.shouldBehaveLikeAnEntity = function() {
     });
   });
   it('allows individual items to have fields specified', function(done) {
-    this.rw.get(this.resource + '/' + this.id).fields(['id'])
+    this.rw.get(this.resource + '/' + this.id).query({fields: {include: ['id']}})
       .end(function(err, response) {
         response.status.should.equal(200);
         fields = Object.keys(response.body.data[0].fields)
@@ -95,7 +96,7 @@ exports.shouldBehaveLikeAnEntity = function() {
   });
   it('allows lists to be filtered via a single condition (using POST)', function(done) {
     var params = { filter: { field: 'id', value: this.id }};
-    this.rw.get(this.resource).send(params).end(function(err, response) {
+    this.rw.post(this.resource).send(params).end(function(err, response) {
       response.status.should.equal(200);
       response.body.count.should.be.equal(1);
       done();
