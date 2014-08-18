@@ -570,4 +570,75 @@ describe('API v1 Facet support', function() {
       done();
     });
   })
+  it('should be affected by search query and global filter when scope = default', function(done) {
+    var params = {
+      query: {
+        value: 'Earthquake'
+      },
+      filter: {
+        field: 'type.name.exact',
+        value: 'Flood'
+      },
+      facets: [
+      {
+        field: 'type',
+        limit: 30,
+        scope: 'default'
+      }
+    ]}
+    rw.method('POST').disasters().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.type.data[0].value.should.equal('Flood');
+      response.body.embedded.facets.type.data[0].count.should.equal(response.body.totalCount);
+      done();
+    });
+  })
+  it('should only be affected by search query when scope = query', function(done) {
+    var params = {
+      query: {
+        value: 'Earthquake'
+      },
+      filter: {
+        field: 'type.name.exact',
+        value: 'Flood'
+      },
+      facets: [
+      {
+        field: 'type',
+        limit: 30,
+        scope: 'query'
+      }
+    ]}
+    rw.method('POST').disasters().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.type.data[0].value.should.equal('Earthquake');
+      response.body.embedded.facets.type.data[0].count.should.be.above(response.body.totalCount);
+      done();
+    });
+  })
+  it('should not be affected by search query or global filter when scope = global', function(done) {
+    var params = {
+      query: {
+        value: 'Earthquake'
+      },
+      filter: {
+        field: 'type.name.exact',
+        value: 'Flood'
+      },
+      facets: [
+      {
+        field: 'type',
+        limit: 30,
+        scope: 'global'
+      }
+    ]}
+    rw.method('POST').disasters().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.type.data[0].value.should.equal('Flood');
+      response.body.embedded.facets.type.data[0].count.should.be.above(response.body.totalCount);
+      response.body.embedded.facets.type.data.length.should.be.above(20);
+      done();
+    });
+  })
+
 })
