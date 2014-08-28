@@ -200,6 +200,23 @@ describe('API v1: Reports - Advanced Testing', function() {
       done();
     });
   })
+
+  it('allows sorting by score', function(done) {
+    var params = {
+      query: {
+        value: 'humanitarian essential ocha',
+      },
+      sort: ['score:desc'],
+      limit: 2
+    };
+
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.data[0].score.should.be.above(1);
+      response.body.data[0].score.should.be.above(response.body.data[1].score);
+      done();
+    });
+  })
 })
 
 describe('API v1 status field tests', function() {
