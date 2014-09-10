@@ -149,6 +149,21 @@ describe('API v1: Reports - Advanced Testing', function() {
     });
   });
 
+  it('should not return body when only body-html is requested', function(done) {
+    var params = {
+      fields: {
+        include: ['body-html']
+      }
+    };
+
+    rw.method('POST').reports().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.data[0].fields.should.have.keys('body-html');
+      response.body.data[0].fields.should.not.have.keys('body');
+      done();
+    });
+  })
+
   it('allows lists to be filtered by multiple conditions', function(done) {
     var params = {
       filter: {
