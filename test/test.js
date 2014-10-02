@@ -405,7 +405,10 @@ describe('API v1 Facet support', function() {
         interval: 'day'
       }
     ]}
-    rw.method('POST').reports().send(params).end(function(err, response) {
+    // Switched to disasters as dramatically reduced content speeds up the test.
+    // This means it can more consistently complete in under 2 seconds on untuned
+    // infrastructure.
+    rw.method('POST').disasters().send(params).end(function(err, response) {
       response.status.should.equal(200);
       done();
     });
