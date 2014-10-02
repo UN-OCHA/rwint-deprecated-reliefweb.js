@@ -75,7 +75,11 @@ exports.shouldBehaveLikeAnEntity = function() {
     });
   });
   it('allows lists to have fields specified', function(done) {
-    this.rw.post(this.resource).fields(['id'])
+    var label = 'title';
+    if (this.resource == 'countries' || this.resource == 'sources' || this.resource == 'disasters') {
+      label = 'name';
+    }
+    this.rw.post(this.resource).fields(['id'], [label])
       .end(function(err, response) {
         response.status.should.equal(200);
         fields = Object.keys(response.body.data[0].fields)
