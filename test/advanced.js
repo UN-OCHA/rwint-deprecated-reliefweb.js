@@ -1,3 +1,5 @@
+var url = require('url');
+
 exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {  
   var rw;
   before(function() {
@@ -58,6 +60,56 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
         response.status.should.equal(200);
         response.body.data[0].score.should.be.above(response.body.data[1].score);
         done();
+    });
+  })
+
+  it('pages by 10 by default', function(done) {
+    rw.reports().end(function(err, response) {
+      response.body.count.should.equal(10);
+      done();
+    });
+  })
+
+  it('persists the default limit in the pager link', function(done) {
+    rw.reports().end(function(err, response) {
+      response.body.links.next.should.have.property('href');
+      var parts = url.parse(response.body.links.next.href, true);
+      parts.query.limit.should.equal('10');
+      done();
+    });
+  })
+
+  it('persists the default offset in the pager link', function(done) {
+    rw.reports().end(function(err, response) {
+      var parts = url.parse(response.body.links.next.href, true);
+      parts.query.offset.should.equal('10');
+      done();
+    });
+  })
+
+  it('persists the overridden limit in the pager link', function(done) {
+    rw.reports().limit(7).end(function(err, response) {
+      response.body.links.next.should.have.property('href');
+      var parts = url.parse(response.body.links.next.href, true);
+      parts.query.limit.should.equal('7');
+      done();
+    });
+  })
+
+  it('persists the overridden offset in the pager link', function(done) {
+    rw.reports().offset(10).end(function(err, response) {
+      var parts = url.parse(response.body.links.next.href, true);
+      parts.query.offset.should.equal('20');
+      done();
+    });
+  })
+
+  it('persists the preset in the pager link', function(done) {
+    rw.reports().preset('analysis').end(function(err, response) {
+      response.body.links.next.should.have.property('href');
+      var parts = url.parse(response.body.links.next.href, true);
+      parts.query.preset.should.equal('analysis');
+      done();
     });
   })
 };
