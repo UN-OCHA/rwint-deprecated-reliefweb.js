@@ -1,6 +1,6 @@
 var url = require('url');
 
-exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {  
+exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
   var rw;
   before(function() {
     rw = reliefweb.client({
@@ -24,7 +24,7 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
         value: 'humanitarian'
       },
       {
-        field: 'source',
+        field: 'source.shortname',
         value: 'OCHA'
       }
     ];
@@ -40,6 +40,7 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
       .filter('date.created', {from: '2007-07-31T00:00:00+00:00'})
       .end(function(err, response) {
         response.status.should.equal(200);
+        response.body.totalCount.should.be.above(10000);
         done();
     });
   })

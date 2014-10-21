@@ -1,4 +1,4 @@
-exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {  
+exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
   var rw;
   before(function() {
     rw = reliefweb.client({
@@ -20,9 +20,9 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
       done();
     });
   });
-  it('should reject presets for items', function(done) {
+  it('should accept presets for items', function(done) {
     rw.reports(items.v1.reports).preset('analysis').end(function(err, response) {
-      response.status.should.equal(400);
+      response.status.should.equal(200);
       done();
     });
   });
