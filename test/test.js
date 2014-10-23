@@ -88,7 +88,7 @@ describe('API v1 POST tests', function() {
   })
 
   it('allows POST requests to be made', function(done) {
-    rw.method('POST').reports().end(function(err, response) {
+    rw.method('POST').reports().send({}).end(function(err, response) {
       response.status.should.equal(200);
       done();
     });
