@@ -26,7 +26,7 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
       done();
     });
   });
-  it.only('should swap presets for lists', function(done) {
+  it('should swap presets for lists', function(done) {
     rw.method('POST').jobs().preset('analysis').fields('status').filter('status', 'expired').end(function(err, response) {
       response.status.should.equal(200);
       response.body.data[0].fields.status.should.equal('expired');
