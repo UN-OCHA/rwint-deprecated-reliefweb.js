@@ -39,7 +39,6 @@ rw.reports(1414, function(err, response) {
 
 ```javascript
 <script type="text/javascript">
-    var reliefweb = require('reliefweb');
     var rw = reliefweb.client();
 
     rw.reports(1414, function(err, response) {
