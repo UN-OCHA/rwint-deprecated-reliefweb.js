@@ -22,7 +22,7 @@
   },
   "main": "./lib/reliefweb.js",
   "dependencies": {
-    "superagent": "~0.16"
+    "superagent": "~0.21"
   },
   "devDependencies": {
     "mocha": "~1.17",
