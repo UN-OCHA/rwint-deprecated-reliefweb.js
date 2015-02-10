@@ -1,6 +1,6 @@
 {
   "name": "reliefweb",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "JavaScript and node.js bindings for the Reliefweb API",
   "author": "Reliefweb",
   "license": "MIT",
@@ -11,7 +11,8 @@
   "keywords": [
     "reliefweb",
     "humanitarian",
-    "sdk"
+    "sdk",
+    "superagent"
   ],
   "homepage": "http://github.com/reliefweb/reliefweb.js",
   "bugs": {
@@ -31,7 +32,7 @@
     "config": "~0.4.35"
   },
   "scripts": {
-    "test": "test/run.sh"
+    "test": "make test"
   }
 }
 
