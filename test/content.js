@@ -20,13 +20,6 @@ exports.shouldBehaveLikeAnEntity = function() {
       done();
     });
   });
-  it('defaults lists to a sort order of id descending', function(done) {
-    this.rw.get(this.resource, function(err, response) {
-      response.status.should.equal(200);
-      response.body.data[0].id.should.be.above(response.body.data[1].id);
-      done();
-    });
-  });
   it('allows lists to be sorted', function(done) {
     this.rw.post(this.resource).sort('id', 'asc')
       .end(function(err, response) {

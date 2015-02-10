@@ -1,4 +1,4 @@
-exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {  
+exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
   var rw;
   before(function() {
     rw = reliefweb.client({
@@ -144,7 +144,7 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
     });
   })
   // @todo sort will be allowed for date facets in API v1.2+.
-  it('should not allow the sort property on date facets', function(done) {
+  it('should allow the sort property on date facets', function(done) {
     var params = { facets: [
       {
         field: 'date',
@@ -152,7 +152,7 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
       }
     ]}
     rw.method('POST').reports().send(params).end(function(err, response) {
-      response.status.should.equal(400);
+      response.status.should.equal(200);
       done();
     });
   })
@@ -339,7 +339,6 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
     ]}
     rw.method('POST').disasters().send(params).end(function(err, response) {
       response.status.should.equal(200);
-      response.body.embedded.facets.type.data[0].value.should.equal('Flood');
       response.body.embedded.facets.type.data[0].count.should.equal(response.body.totalCount);
       done();
     });
@@ -388,6 +387,33 @@ exports.shouldBehaveAsExpected = function(reliefweb, config, resources, items) {
       response.body.embedded.facets.type.data[0].value.should.equal('Flood');
       response.body.embedded.facets.type.data[0].count.should.be.above(response.body.totalCount);
       response.body.embedded.facets.type.data.length.should.be.above(20);
+      done();
+    });
+  })
+  it('should return less result for filtered facets', function(done) {
+    var params = {
+      query: {
+        value: 'Earthquake'
+      },
+      facets: [
+      {
+        field: 'type',
+        name: 'type1',
+        limit: 1
+      },
+      {
+        field: 'type',
+        name: 'type2',
+        limit: 1,
+        filter: {
+          field: 'country.name.exact',
+          value: 'China'
+        }
+      }
+    ]}
+    rw.method('POST').disasters().send(params).end(function(err, response) {
+      response.status.should.equal(200);
+      response.body.embedded.facets.type1.data[0].count.should.be.above(response.body.embedded.facets.type2.data[0].count);
       done();
     });
   })
