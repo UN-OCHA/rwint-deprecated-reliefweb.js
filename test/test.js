@@ -1,14 +1,7 @@
 var assert = require('assert')
   , reliefweb = require('../lib/reliefweb')
-  , content = require('./content')
-  , meta = require('./meta')
-  , advanced = require('./advanced')
-  , facets = require('./facets')
-  , processors = require('./processors')
-
+  , config = require('config')
 ;
-
-var config = require('config');
 
 var resources = {
   "v0": ["job", "training", "disaster", "source", "country", "report"],
@@ -16,23 +9,35 @@ var resources = {
 };
 
 var items = {
-  "v1": {"jobs": 656171, "training": 586347, "disasters": 14072, "sources": 1503, "countries": 13, "reports": 436552}
+  "v1": {
+    "jobs": 656171,
+    "training": 586347,
+    "disasters": 14072,
+    "sources": 1503,
+    "countries": 13,
+    "reports": 436552
+  }
 };
 
 describe('reliefweb.js', function() {
   var rw = reliefweb.client({
     'host': config.api.host
   });
-  it ('produces a valid API client', function() {
+
+  it('produces a valid API client', function() {
     rw.should.be.an.instanceOf(reliefweb.Client);
-  })
+  });
+
+  it('can be used to query the API', function(done) {
+    rw.request('/', function(err, response) {
+      response.status.should.equal(200);
+      done();
+    });
+  });
 });
 
-describe('API Meta-Resources', function() {
-  meta.shouldBehaveLikeAMetaResource(reliefweb, config, resources, items);
-})
 
-describe('API v1 Entity:', function() {
+describe('Verify Resource', function() {
   before(function() {
     this.rw = reliefweb.client({
       'host': config.api.host
@@ -44,62 +49,75 @@ describe('API v1 Entity:', function() {
       before(function() {
         this.resource = resource;
         this.id = items.v1[resource];
-      })
+      });
 
-      content.shouldBehaveLikeAnEntity();
-    })
-  })
-})
+      it('provides lists of content', function(done) {
+        this.rw.get(this.resource, function(err, response) {
+          response.status.should.equal(200);
+          done();
+        });
+      });
 
-describe('API v1: Advanced Use Cases', function() {
-  advanced.shouldBehaveAsExpected(reliefweb, config, resources, items);
-})
+      it('provides single entities', function(done) {
+        this.rw.get(this.resource + '/' + this.id, function(err, response) {
+          response.status.should.equal(200);
+          done();
+        });
+      });
 
-describe('API v1 status field tests', function() {
-  var rw;
-  before(function() {
-    rw = reliefweb.client({
-      'host': config.api.host
+      it('may be listed via a wrapper method', function(done) {
+        this.rw[this.resource]().end(function(err, response) {
+          response.status.should.equal(200);
+          done();
+        });
+      });
+
+      it('may have items retrieved via a wrapper method', function(done) {
+        this.rw[this.resource](this.id).end(function(err, response) {
+          response.status.should.equal(200);
+          done();
+        });
+      });
+    });
+  });
+});
+
+describe('Invalid Resources', function() {
+  var rw = reliefweb.client({
+    'host': config.api.host
+  });
+
+  it('provide a 404 when queried', function(done) {
+    rw.get('fake').end(function(err, response) {
+      var request = response.request;
+      response.status.should.equal(404);
+      done();
     });
   });
 
-  it('should see the status field', function(done) {
-    rw.method('POST').reports().fields('status').limit(1).end(function(err, response) {
-      response.status.should.equal(200);
-      response.body.data[0].fields.status.should.exist;
-      done();
-    });
-  })
-})
+  it('are not supported with a wrapper', function() {
+    rw.should.not.have.property('fake');
+  });
+});
 
-describe('API v1 POST tests', function() {
-  var rw;
-  before(function() {
-    rw = reliefweb.client({
-      'host': config.api.host
+describe('Specify Methods', function() {
+  var rw = reliefweb.client({
+    'host': config.api.host
+  });
+
+  it('uses GET by default', function(done) {
+    rw.reports().end(function(err, response) {
+      var request = response.request;
+      request.method.should.equal('GET');
+      done();
     });
   });
 
-  it('simple GET test to verify functionality', function (done) {
-    rw.reports(238722).end(function(err, response) {
-      response.status.should.equal(200);
+  it('should allow method overriding to POST', function(done) {
+    rw.method('POST').reports().end(function(err, response) {
+      var request = response.request;
+      request.method.should.equal('POST');
       done();
     });
-  })
-
-  it('allows POST requests to be made', function(done) {
-    rw.method('POST').reports().send({}).end(function(err, response) {
-      response.status.should.equal(200);
-      done();
-    });
-  })
-})
-
-describe('API v1 Facet support', function() {
-  facets.shouldBehaveAsExpected(reliefweb, config, resources, items);
-})
-
-
-describe('API v1 Processors', function() {
-  processors.shouldBehaveAsExpected(reliefweb, config, resources, items);
-})
+  });
+});

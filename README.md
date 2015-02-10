@@ -53,3 +53,14 @@ rw.reports(1414, function(err, response) {
 * Use `make test` or `make jenkins`
 * To specify configuration for the tests, such as the host, we are using the [node-config](http://lorenwest.github.io/node-config/latest/) library.
 ** For example, `export NODE_CONFIG='{"api":{"host":"api.rwlabs.org"}}'`
+
+# Tips & Tricks
+
+## Get the full URL in the response callback
+
+```js
+    rw.reports().end(function(err, response) {
+      var request = response.request;
+      console.log(request.url);
+    });
+```
