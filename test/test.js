@@ -3,6 +3,10 @@ var assert = require('assert')
   , config = require('config')
 ;
 
+if (Object.keys(config).length === 0) {
+  config = { api: { host: "api.rwlabs.org" } };
+}
+
 var resources = {
   "v0": ["job", "training", "disaster", "source", "country", "report"],
   "v1": ["jobs", "training", "disasters", "sources", "countries", "reports"]
