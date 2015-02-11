@@ -1,6 +1,10 @@
 # reliefweb.js
 
-Node.js and JavaScript bindings for the Reliefweb.int API.
+JavaScript and Node bindings for the ReliefWeb API.
+Read the [docs on ReliefWeb.int](http://reliefweb.int/help/api) or [get started with the API](http://api.rwlabs.org).
+
+[![Build Status](https://travis-ci.org/reliefweb/reliefweb.js.svg)](https://travis-ci.org/reliefweb/reliefweb.js)
+[![npm version](https://badge.fury.io/js/reliefweb.svg)](https://www.npmjs.com/package/reliefweb)
 
 # Installation
 
