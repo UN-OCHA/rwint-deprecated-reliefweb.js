@@ -5,6 +5,7 @@ Read the [docs on ReliefWeb.int](http://reliefweb.int/help/api) or [get started 
 
 [![Build Status](https://travis-ci.org/reliefweb/reliefweb.js.svg)](https://travis-ci.org/reliefweb/reliefweb.js)
 [![npm version](https://badge.fury.io/js/reliefweb.svg)](https://www.npmjs.com/package/reliefweb)
+[![Bower version](https://badge.fury.io/bo/reliefweb.js.svg)](https://github.com/reliefweb/reliefweb.js/releases/latest)
 
 # Installation
 
