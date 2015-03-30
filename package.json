@@ -1,6 +1,6 @@
 {
   "name": "reliefweb",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "JavaScript and node.js bindings for the Reliefweb API",
   "author": "Reliefweb",
   "license": "MIT",
